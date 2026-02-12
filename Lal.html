@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>نسمة فخامة – متجر عطور فاخر</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* تحسينات عامة على التصميم */
+    body {margin:0;font-family:'Tajawal',sans-serif;background:#0A0A0A;color:#FFF;line-height:1.8; scroll-behavior: smooth; overflow-x: hidden;}
+    
+    nav {background:#000;padding:15px;text-align:center;border-bottom:1px solid #D4AF37;position:sticky;top:0;z-index:1000; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;}
+    nav a {color:#D4AF37; margin:0 5px; text-decoration:none;font-weight:bold; cursor: pointer; transition: 0.3s; font-size: 15px;}
+    nav a i { margin-left: 5px; }
+    nav a:hover {color: #fff; text-shadow: 0 0 5px #D4AF37;}
+
+    header {text-align:center;padding:80px 20px;background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=1200'); background-size: cover; background-position: center; border-bottom:1px solid #D4AF37;}
+    header h1 {color:#D4AF37;font-size:50px;margin:0; text-transform: uppercase; letter-spacing: 2px;}
+    header p {color:#CCC;font-size:22px; margin-top: 10px;}
+
+    .page-section { display: none; padding: 60px 20px; max-width: 1100px; margin: auto; min-height: 70vh; }
+    .page-section.active { display: block; animation: fadeIn 0.5s ease; }
+
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+
+    h2 {color:#D4AF37;text-align:center;font-size:35px;margin-bottom:40px; border-bottom: 2px solid #1A1A1A; padding-bottom: 15px;}
+
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+    
+    .card {
+        background:#1A1A1A; border:1px solid #333; padding:20px; border-radius:15px; 
+        text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .card:hover { border-color: #D4AF37; transform: translateY(-8px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1); }
+    .card img { width: 100%; height: 280px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; background: #000;}
+    .card h3 { color: #D4AF37; margin: 10px 0; font-size: 22px; }
+    .card .desc { color: #aaa; font-size: 14px; margin-bottom: 15px; flex-grow: 1; }
+    .card .price { color: #fff; font-weight: bold; font-size: 20px; margin-bottom: 15px; display: block;}
+
+    .cart-box { background:#1A1A1A; border:1px solid #333; padding:25px; border-radius:15px; max-width: 700px; margin: auto; }
+    .cart-item {
+        background:#111; border:1px solid #333; padding:15px; border-radius:10px; margin-bottom:15px;
+        display: flex; align-items: center; gap: 20px; text-align: right; animation: fadeIn 0.3s ease;
+    }
+    .cart-item img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid #D4AF37; }
+
+    #toast {
+        position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+        background: #D4AF37; color: #000; padding: 15px 35px; border-radius: 50px;
+        font-weight: bold; z-index: 2000; transition: 0.5s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    input, textarea { width:100%; padding:12px; margin:10px 0; background:#000; border:1px solid #333; color:#FFF; border-radius:6px; box-sizing: border-box; font-family: inherit; }
+    input:focus { border-color: #D4AF37; outline: none; }
+    
+    .btn { display:inline-block; padding:12px 20px; background:#D4AF37; color:#000; border-radius:6px; text-decoration:none; font-weight:bold; cursor: pointer; border: none; width: 100%; text-align: center; transition: 0.3s; font-size: 16px;}
+    .btn:hover { background:#b8922f; transform: scale(1.02); }
+    
+    .google-btn { background: #fff; color: #000; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; border-radius: 6px; padding: 12px; width: 100%; font-weight: bold; cursor: pointer; }
+    .google-btn i { color: #4285F4; font-size: 20px; }
+
+    footer {text-align:center; padding:40px; color:#D4AF37; border-top: 1px solid #1F1F1F; margin-top: 50px;}
+
+    .checkout-form { display: none; margin-top: 30px; border-top: 1px dashed #D4AF37; padding-top: 20px; }
+    .payment-icons { display: flex; justify-content: center; gap: 15px; margin-top: 15px; font-size: 28px; color: #ccc; }
+    .discount-msg { color: #2ecc71; font-size: 14px; display: none; margin-top: 5px; font-weight: bold; }
+    #backToTop { position: fixed; bottom: 30px; left: 30px; background: #D4AF37; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; z-index: 1001; display: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    #backToTop:hover { transform: scale(1.1); background: #fff; }
+</style>
+</head>
+
+<body>
+
+<div id="toast">تمت الإضافة بنجاح! 🛍️</div>
+
+<button id="backToTop" onclick="window.scrollTo(0,0)"><i class="fas fa-arrow-up"></i></button>
+
+<nav>
+    <a onclick="showPage('home')"><i class="fas fa-home"></i>الرئيسية</a>
+    <a onclick="showPage('products')"><i class="fas fa-box-open"></i>المنتجات</a>
+    <a onclick="showPage('gifts')"><i class="fas fa-gift"></i>الهدايا</a>
+    <a onclick="showPage('reviews')"><i class="fas fa-star"></i>الآراء</a>
+    <a onclick="showPage('auth-section')"><i class="fas fa-user-circle"></i>حسابي</a>
+    <a onclick="showPage('cart')"><i class="fas fa-shopping-cart"></i>السلة (<span id="cart-count">0</span>)</a>
+    <a onclick="showPage('contact')"><i class="fas fa-envelope"></i>تواصل معنا</a>
+</nav>
+
+<div id="home" class="page-section active">
+    <header>
+        <h1>نسمة فخامة</h1>
+        <p>توقيعك العطري يبدأ من هنا</p>
+    </header>
+    <section style="text-align: center; margin-top: 40px;">
+        <h2>مرحباً بك في عالم الفخامة</h2>
+        <p style="font-size: 18px; max-width: 800px; margin: 0 auto 30px auto; color: #bbb;">نحن نصنع ذكريات لا تُنسى في زجاجة. عطورنا مستوحاة من التراث العربي وممزوجة بأجود الزيوت العالمية لتمنحك حضوراً لا يغيب.</p>
+        <button class="btn" style="max-width: 280px; font-size: 18px;" onclick="showPage('products')">ابدأ رحلة التسوق الآن</button>
+    </section>
+</div>
+
+<div id="products" class="page-section">
+    <h2>منتجاتنا الفاخرة</h2>
+    <div class="grid-container">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=400" alt="السندس">
+            <h3>السندس الفاخر</h3>
+            <p class="desc">عبير شرقي دافئ يمزج بين العود الملكي والزعفران.</p>
+            <span class="price">199 ريال</span>
+            <button class="btn" onclick="addToCart('السندس الفاخر', 199, 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400')">أضف للسلة</button>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400" alt="باريس">
+            <h3>لمسة باريس</h3>
+            <p class="desc">رائحة فرنسية ناعمة من الياسمين الأبيض والمسك.</p>
+            <span class="price">179 ريال</span>
+            <button class="btn" onclick="addToCart('لمسة باريس', 179, 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400')">أضف للسلة</button>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400" alt="عود">
+            <h3>عود الملك</h3>
+            <p class="desc">عطر قوي وفخم يعبر عن الشخصية القيادية.</p>
+            <span class="price">249 ريال</span>
+            <button class="btn" onclick="addToCart('عود الملك', 249, 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400')">أضف للسلة</button>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400" alt="روح المسك">
+            <h3>روح المسك</h3>
+            <p class="desc">رائحة النظافة الصافية مع لمسات من بودرة الأوركيد.</p>
+            <span class="price">150 ريال</span>
+            <button class="btn" onclick="addToCart('روح المسك', 150, 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400')">أضف للسلة</button>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1616949755610-8c9bbc08f138?w=400" alt="فخامة العرب">
+            <h3>فخامة العرب</h3>
+            <p class="desc">مزيج حاد من الجلد المدخن والعود المعتق.</p>
+            <span class="price">280 ريال</span>
+            <button class="btn" onclick="addToCart('فخامة العرب', 280, 'https://images.unsplash.com/photo-1616949755610-8c9bbc08f138?w=400')">أضف للسلة</button>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1619994403073-2cec844b8e63?w=500" alt="نسمة صيف">
+            <h3>نسمة صيف</h3>
+            <p class="desc">عطر الحمضيات المنعش مع نفحات من شاي الأرجان.</p>
+            <span class="price">165 ريال</span>
+            <button class="btn" onclick="addToCart('نسمة صيف', 165, 'https://images.unsplash.com/photo-1619994403073-2cec844b8e63?w=500')">أضف للسلة</button>
+        </div>
+    </div>
+</div>
+
+<div id="gifts" class="page-section">
+    <h2>قسم الهدايا الفاخرة</h2>
+    <div class="grid-container">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500" alt="علبة هدايا ملكية">
+            <h3>علبة هدايا ملكية</h3>
+            <p class="desc">تغليف فاخر باللون الوردي مع شريط ذهبي حريري، مثالي للإهداء.</p>
+            <span class="price">45 ريال</span>
+            <button class="btn" onclick="addToCart('علبة هدايا ملكية', 45, 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500')">أضف للسلة</button>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1512909006721-3d6018887383?w=400" alt="باقة الثلاثة الكبار">
+            <h3>باقة الثلاثة الكبار</h3>
+            <p class="desc">مجموعة من أفضل 3 عطور لدينا في صندوق واحد فاخر.</p>
+            <span class="price">499 ريال</span>
+            <button class="btn" onclick="addToCart('باقة الثلاثة الكبار', 499, 'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=400')">أضف للسلة</button>
+        </div>
+        <div class="card">
+            <img src="data:image/jpeg;base64,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" alt="باقة العينات">
+            <h3>باقة 6 عينات</h3>
+            <p class="desc">6 زجاجات ميني (3 مل) لجميع روائحنا في بوكس فاخر.</p>
+            <span class="price">89 ريال</span>
+            <button class="btn" onclick="addToCart('باقة 6 عينات', 89, 'data:image/jpeg;base64,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')">أضف للسلة</button>
+        </div>
+    </div>
+</div>
+
+<div id="reviews" class="page-section">
+    <h2>آراء عملائنا</h2>
+    <div class="grid-container">
+        <div class="card" style="text-align: right;">
+            <p style="color: #D4AF37;">★★★★★</p><p>"ثبات العطور ممتاز والتوصيل سريع جداً."</p><strong>- فهد العتيبي</strong>
+        </div>
+        <div class="card" style="text-align: right;">
+            <p style="color: #D4AF37;">★★★★★</p><p>"باقة العينات ساعدتني في اختيار عطري المفضل."</p><strong>- ريم القحطاني</strong>
+        </div>
+        <div class="card" style="text-align: right;">
+            <p style="color: #D4AF37;">★★★★★</p><p>"تغليف الهدايا راقي جداً ويبيض الوجه."</p><strong>- نورة السبيعي</strong>
+        </div>
+    </div>
+</div>
+
+<div id="cart" class="page-section">
+    <h2>سلة المشتريات</h2>
+    <div class="cart-box">
+        <div id="cart-empty" style="text-align: center; color: #666; padding: 40px 0;">السلة فارغة حالياً</div>
+        <div id="cart-items-list"></div>
+        <div id="coupon-area" style="display:none; margin-top:20px;">
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="coupon-input" placeholder="كود الخصم (جرب NESMA10)" style="margin:0;">
+                <button class="btn" onclick="applyCoupon()" style="width:120px;">تطبيق</button>
+            </div>
+            <p id="discount-msg" class="discount-msg">تم تطبيق خصم 10% بنجاح!</p>
+        </div>
+        <div id="total-area" style="display:none; border-top: 2px solid #333; padding-top:20px; margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:22px; color:#D4AF37; font-weight:bold;">
+                <span>إجمالي الطلب:</span>
+                <span><span id="total-amount">0</span> ريال</span>
+            </div>
+            <button class="btn" style="margin-top:20px;" id="checkout-main-btn" onclick="toggleCheckout()">إتمام الشراء</button>
+        </div>
+        
+        <div id="checkout-form" class="checkout-form">
+            <h3>تفاصيل الشحن</h3>
+            <input type="text" id="city" placeholder="المدينة">
+            <input type="text" id="address" placeholder="الحي والشارع">
+            <textarea placeholder="ملاحظات التوصيل (اختياري)"></textarea>
+            
+            <h3 style="margin-top:20px;">طريقة الدفع</h3>
+            <div class="payment-icons">
+                <i class="fab fa-cc-visa" title="Visa"></i>
+                <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                <i class="fab fa-apple-pay" style="color:#fff;" title="Apple Pay"></i>
+            </div>
+            <button class="btn" style="background:#2ecc71; margin-top:20px;" onclick="confirmOrder()">تأكيد الطلب نهائياً</button>
+        </div>
+    </div>
+</div>
+
+<div id="auth-section" class="page-section">
+    <h2 id="auth-title">تسجيل الدخول</h2>
+    <div class="cart-box">
+        <div id="login-fields">
+            <input type="email" id="login-email" placeholder="البريد الإلكتروني">
+            <input type="password" id="login-pass" placeholder="كلمة المرور">
+        </div>
+        <div id="register-fields" style="display:none;">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="reg-fname" placeholder="الاسم الأول">
+                <input type="text" id="reg-lname" placeholder="اللقب">
+            </div>
+            <input type="text" id="reg-phone" placeholder="رقم الجوال">
+            <input type="email" id="reg-email" placeholder="البريد الإلكتروني">
+            <input type="password" id="reg-pass" placeholder="كلمة المرور">
+        </div>
+        <button class="btn" id="main-auth-btn" onclick="handleAuth()">دخول</button>
+        <button class="google-btn"><i class="fab fa-google"></i> الدخول عبر Google</button>
+        <p style="text-align: center; margin-top:15px;">
+            <span id="toggle-text">ليس لديك حساب؟</span> 
+            <a onclick="toggleAuth()" style="color:#D4AF37; cursor:pointer; font-weight:bold;">سجل الآن</a>
+        </p>
+    </div>
+</div>
+
+<div id="contact" class="page-section">
+    <h2>تواصل معنا</h2>
+    <div class="cart-box" style="text-align: center;">
+        <p><i class="fab fa-whatsapp" style="color:#25D366;"></i> واتساب: 0509920330</p>
+        <p><i class="fab fa-instagram" style="color:#E1306C;"></i> إنستغرام: @nesma_fakhama</p>
+        <p><i class="fab fa-x-twitter"></i> منصة X: @nesma_fakhama</p>
+        <p><i class="far fa-envelope"></i> البريد الإلكتروني: info@nesma.com</p>
+    </div>
+</div>
+
+<footer>جميع الحقوق محفوظة © نسمة فخامة 2026</footer>
+
+<script>
+    // التنقل بين الصفحات
+    function showPage(pageId) {
+        document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    let cart = JSON.parse(localStorage.getItem('nesma_cart')) || [];
+    let discount = 0;
+    let isLoggedIn = false; 
+
+    window.onload = updateCart;
+
+    // زر العودة للأعلى
+    window.onscroll = function() {
+        let btt = document.getElementById("backToTop");
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            btt.style.display = "block";
+        } else {
+            btt.style.display = "none";
+        }
+    };
+
+    function addToCart(name, price, img) {
+        cart.push({ name, price, img });
+        saveCart();
+        updateCart();
+        showToast();
+    }
+
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.style.top = '80px';
+        setTimeout(() => { toast.style.top = '-100px'; }, 2500);
+    }
+
+    function saveCart() { localStorage.setItem('nesma_cart', JSON.stringify(cart)); }
+
+    function updateCart() {
+        const cartCount = document.getElementById('cart-count');
+        const cartList = document.getElementById('cart-items-list');
+        const emptyMsg = document.getElementById('cart-empty');
+        const totalArea = document.getElementById('total-area');
+        const totalAmount = document.getElementById('total-amount');
+        const couponArea = document.getElementById('coupon-area');
+
+        cartCount.innerText = cart.length;
+        if (cart.length > 0) {
+            emptyMsg.style.display = 'none';
+            totalArea.style.display = 'block';
+            couponArea.style.display = 'block';
+            cartList.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <img src="${item.img}" onerror="this.src='https://via.placeholder.com/80?text=Perfume'">
+                    <div style="flex-grow:1;">
+                        <strong style="color:#D4AF37;">${item.name}</strong><br>
+                        <span>${item.price} ريال</span>
+                    </div>
+                    <button onclick="removeItem(${index})" style="background:none; border:none; color:#ff4d4d; cursor:pointer; font-size:22px;">×</button>
+                </div>
+            `).join('');
+            
+            let total = cart.reduce((sum, item) => sum + parseInt(item.price), 0);
+            if(discount > 0) total = total - (total * discount);
+            totalAmount.innerText = Math.round(total);
+        } else {
+            emptyMsg.style.display = 'block'; 
+            totalArea.style.display = 'none'; 
+            couponArea.style.display = 'none';
+            cartList.innerHTML = '';
+            document.getElementById('checkout-form').style.display = 'none';
+        }
+    }
+
+    function applyCoupon() {
+        if (discount > 0) {
+            alert("تم تطبيق الخصم مسبقاً لهذا الطلب.");
+            return;
+        }
+        const input = document.getElementById('coupon-input').value;
+        const msg = document.getElementById('discount-msg');
+        if(input.toUpperCase() === 'NESMA10') {
+            discount = 0.10;
+            msg.style.display = 'block';
+            updateCart();
+        } else {
+            alert("كود الخصم غير صحيح");
+        }
+    }
+
+    // الربط بتسجيل الدخول قبل إتمام الشراء
+    function toggleCheckout() {
+        if (!isLoggedIn) {
+            alert("يرجى تسجيل الدخول أولاً لإكمال عملية الشراء.");
+            showPage('auth-section');
+            return;
+        }
+        const form = document.getElementById('checkout-form');
+        form.style.display = (form.style.display === 'block') ? 'none' : 'block';
+        if(form.style.display === 'block') {
+            setTimeout(() => form.scrollIntoView({behavior: "smooth"}), 100);
+        }
+    }
+
+    function handleAuth() {
+        if (isLogin) {
+            // التحقق من حقول تسجيل الدخول
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if (!email || !pass) {
+                alert("عذراً، يرجى إدخال البريد الإلكتروني وكلمة المرور.");
+                return;
+            }
+        } else {
+            // التحقق من حقول التسجيل الجديد
+            const fname = document.getElementById('reg-fname').value.trim();
+            const lname = document.getElementById('reg-lname').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value.trim();
+
+            if (!fname || !lname || !phone || !email || !pass) {
+                alert("يرجى تعبئة جميع الحقول المطلوبة (الاسم، اللقب، الجوال، البريد، وكلمة السر).");
+                return;
+            }
+        }
+
+        isLoggedIn = true;
+        alert('تم تسجيل الدخول بنجاح');
+        showPage('cart');
+    }
+
+    function confirmOrder() {
+        const city = document.getElementById('city').value;
+        const address = document.getElementById('address').value;
+        
+        if (!city || !address) {
+            alert("الرجاء إدخال المدينة والعنوان لإكمال الطلب.");
+            return;
+        }
+
+        alert("تم استلام طلبك بنجاح! شكراً لاختيارك نسمة فخامة. سيصلك اتصال لتأكيد التوصيل قريباً.");
+        cart = []; 
+        discount = 0; 
+        document.getElementById('discount-msg').style.display = 'none';
+        document.getElementById('coupon-input').value = '';
+        saveCart();
+        updateCart();
+        showPage('home'); 
+    }
+
+    function removeItem(index) { 
+        cart.splice(index, 1); 
+        saveCart(); 
+        updateCart(); 
+    }
+
+    let isLogin = true;
+    function toggleAuth() {
+        const loginFields = document.getElementById('login-fields'), regFields = document.getElementById('register-fields');
+        const authTitle = document.getElementById('auth-title'), authBtn = document.getElementById('main-auth-btn'), toggleText = document.getElementById('toggle-text');
+        if (isLogin) {
+            loginFields.style.display = 'none'; regFields.style.display = 'block';
+            authTitle.innerText = "إنشاء حساب"; authBtn.innerText = "إنشاء حساب"; toggleText.innerText = "لديك حساب؟";
+        } else {
+            loginFields.style.display = 'block'; regFields.style.display = 'none';
+            authTitle.innerText = "تسجيل الدخول"; authBtn.innerText = "دخول"; toggleText.innerText = "ليس لديك حساب؟";
+        }
+        isLogin = !isLogin;
+    }
+</script>
+
+</body>
+</html>
